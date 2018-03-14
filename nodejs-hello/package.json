@@ -1,0 +1,9 @@
+{
+  "name": "nodejs-hello",
+  "version": "0.0.0",
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "bluebird": "^3.4.1",
+  },
+  "license": "Apache 2.0"
+}
