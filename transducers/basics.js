@@ -3,12 +3,13 @@ const compose = (...fns) => x => {
   return fns.reduceRight((y, f) => { 
     console.log('reducing...'); 
     console.log('previousReducer:', y); 
-    console.log('currectReducer:', f); 
+    console.log('currectTransducer:', f); 
     return f(y);
   }, x)
 };
   
-//const compose = (...reducers) => initReducer => reducers.reduceRight((previousReducer, currectReducer) => currectReducer(previousReducer), initReducer)
+//const compose = (...fns) => x => fns.reduceRight((y, f) => f(y), x); 
+//const compose = (...reducers) => initReducer => reducers.reduceRight((previousReducer, currectTransducer) => currectTransducer(previousReducer), initReducer)
 
 const map = f => step => (a, c) => step(a, f(c));
 
