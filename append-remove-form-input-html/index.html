@@ -1,0 +1,42 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+	<h1>Append/Remove Inputs</h1>
+	<p>Filling up an input field a new one will appear. Erasing an input field value the field will disappear.
+	<br>
+	<form action="#">
+		<div class="form-group col-md-4">
+			<input name="myinp" type="text" class="form-control">
+		</div>
+		<div class="form-group col-md-4">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+const selectorQuery = '[name=myinp]'; // change me
+
+document.querySelectorAll(selectorQuery).forEach(handleInput);
+
+function handleInput(inp) {
+    inp.onkeyup = event => {
+        const list = document.querySelectorAll(selectorQuery);
+		const index = Array.from(list).indexOf(inp);
+
+		if (list.length === index + 1 && event.target.value) {
+            const newInp = inp.cloneNode(false);
+			newInp.value = '';
+			inp.parentNode.appendChild(newInp);
+			handleInput(newInp, index + 1);
+		}
+        if (list.length !== index + 1 && !event.target.value) {
+			inp.remove();
+		}
+    }
+}
+</script>
+</body>
+</html>
