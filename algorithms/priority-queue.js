@@ -8,19 +8,43 @@ class PriorityQueue {
 	
 	add(value) {
 		this.heap.push(value);		
-		this.swim(this.heap, this.heap.length - 1);
+		this.swimUp(this.heap, this.heap.length - 1);
 	}	
 			
-	remove() {
-		return this.heap.pop();
+	remove(value) {
+		if (!value) {
+			return this.heap.pop();
+			
+		} else {
+			const valueIndex = this.indexOf(value);
+			this.swap(this.heap, valueIndex, this.heap.length);
+			this.swimDown(this.heap, valueIndex);
+			this.heap = this.heap
+				.reduce((a,c) => c ? [...a, c] : a, [])
+				.slice(0, -1);
+			return value; 
+		}
 	}
 	
-	swim(heap, index) {
+	swimUp(heap, index) {
 		const parentIndex = this.parentIndexFor(index);		
 		if (heap[index] > heap[parentIndex]) {
 			this.swap(heap, parentIndex, index);
-			this.swim(heap, parentIndex)
+			this.swimUp(heap, parentIndex)
 		}
+	}
+	
+	swimDown(heap, index) {
+		[index * 2, index * 2 + 1].forEach(childIndex => {
+			if (heap[childIndex] > heap[index]) {
+				this.swap(heap, childIndex, index);
+				this.swimDown(heap, childIndex)
+			}
+		});
+	}
+	
+	indexOf(value) {
+		return this.heap.indexOf(value);
 	}
 	
 	swap(arr, index1, index2) {
@@ -40,14 +64,22 @@ queue.add(1);
 queue.add(5);
 queue.add(2);
 queue.add(4);
+queue.add(7);
+queue.add(8);
+queue.add(9);
+queue.add(6);
 
 console.log(queue);
 
-assertEquals(1, queue.remove());
-assertEquals(2, queue.remove());
-assertEquals(3, queue.remove());
-assertEquals(4, queue.remove());
-assertEquals(5, queue.remove());
+queue.remove(9);
+queue.remove();
+queue.remove();
+queue.remove();
+queue.remove();
+queue.remove();
+queue.remove();
+queue.remove();
+assertEquals(8, queue.remove());
 
 
 function assertEquals(expected, actual) {
