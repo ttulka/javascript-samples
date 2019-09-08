@@ -17,12 +17,14 @@ class PriorityQueue {
 			
 		} else {
 			const valueIndex = this.indexOf(value);
-			this.swap(this.heap, valueIndex, this.heap.length);
-			this.swimDown(this.heap, valueIndex);
-			this.heap = this.heap
-				.reduce((a,c) => c ? [...a, c] : a, [])
-				.slice(0, -1);
-			return value; 
+			if (valueIndex) {
+				this.swap(this.heap, valueIndex, this.heap.length);
+				this.swimDown(this.heap, valueIndex);
+				this.heap = this.heap
+					.reduce((a,c) => c ? [...a, c] : a, [])
+					.slice(0, -1);
+				return value; 
+			}
 		}
 	}
 	
