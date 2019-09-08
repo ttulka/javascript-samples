@@ -43,11 +43,11 @@ queue.add(4);
 
 console.log(queue);
 
-assertEquals(queue.remove(), 1);
-assertEquals(queue.remove(), 2);
-assertEquals(queue.remove(), 3);
-assertEquals(queue.remove(), 4);
-assertEquals(queue.remove(), 5);
+assertEquals(1, queue.remove());
+assertEquals(2, queue.remove());
+assertEquals(3, queue.remove());
+assertEquals(4, queue.remove());
+assertEquals(5, queue.remove());
 
 
 function assertEquals(expected, actual) {
