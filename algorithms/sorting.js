@@ -111,7 +111,7 @@ function assertEquals(expected, actual) {
 
 // performance measurements
 const LENGTH = 10000;
-const arr = Array(LENGTH).map(x => Math.random() * LENGTH);
+const arr = Array(LENGTH).fill(0).map(x => Math.round(Math.random() * LENGTH));
 
 [bubblesort, insertionsort, selectionsort, mergesort].forEach(alg => {
 	console.time(alg.name);
