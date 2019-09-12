@@ -73,7 +73,27 @@ function mergesort(a) {
 	}
 	const pivot = Math.floor(a.length / 2);
 	
-	return insertionsort([...mergesort(a.slice(0, pivot)), ...mergesort(a.slice(pivot))]);
+	return merge(mergesort(a.slice(0, pivot)), mergesort(a.slice(pivot)));
+	
+	function merge(l, r) {
+		const sorted = [];
+		while (l.length && r.length) {
+			if (l[0] < r[0]) {
+				sorted.push(l[0]);
+				l.shift();
+			} else {
+				sorted.push(r[0]);
+				r.shift();
+			}
+		}
+		while (l.length)
+			sorted.push(l.shift());
+		
+		while (r.length)
+			sorted.push(r.shift());
+	
+		return sorted;
+	}
 }
 
 assertEquals('', mergesort([]).toString());
@@ -88,3 +108,15 @@ function assertEquals(expected, actual) {
 		throw new Error('Expected ' + expected + ', got ' + actual);
 	}
 }
+
+// performance measurements
+const LENGTH = 10000;
+const arr = Array(LENGTH).map(x => Math.random() * LENGTH);
+
+[bubblesort, insertionsort, selectionsort, mergesort].forEach(alg => {
+	console.time(alg.name);
+	alg(arr);
+	console.timeEnd(alg.name);
+});
+
+
