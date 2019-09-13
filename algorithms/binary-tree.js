@@ -20,45 +20,44 @@ class BinaryTree {
 	
 	remove(value) {
 		this.root = this.removeFrom(value, this.root);
-    return this;
+		return this;
 	}
 	
 	removeFrom(value, node) {
 		if (!node) {
 			return null;
 		}
-    if (node.value === value) {
-      return this.removeAndRewindNode(value, node);      
-    }    
-    if (node.right.value === value) {
-			node.right = this.removeAndRewindNode(value, node.right);
-			
-		} else if (node.left.value === value) {
-			node.left = this.removeAndRewindNode(value, node.left);
-			
+		if (node.value === value) {
+		  return this.removeAndRewindNode(value, node);      
+		
 		} else if (value > node.value) {
-			this.removeFrom(value, node.right);
+			node.right = this.removeFrom(value, node.right);
 			
 		} else {
-			this.removeFrom(value, node.left);
+			node.left = this.removeFrom(value, node.left);
 		}		
 		return node;
 	}
 	
 	removeAndRewindNode(value, node) {
 		if (node.left && node.right) {
+			if (this.hasOnlyLeafs(node)) {
+				node.value = node.right.value;
+				node.right = null;
+				return node;
+			}			
 			const parentOfMax = this.maxParentNode(node.left);
-      if (parentOfMax) {
+			if (parentOfMax) {
 				node.value = parentOfMax.right.value;
 				parentOfMax.right = parentOfMax.right.left;
-        return node;
+				return node;
 			}
 			const parentOfMin = this.minParentNode(node.right);
-      if (parentOfMin) {
-        node.value = parentOfMin.left.value;
+			if (parentOfMin) {
+				node.value = parentOfMin.left.value;
 				parentOfMin.left = parentOfMin.left.right;
-        return node;
-			}      
+				return node;
+			}			
 		}
 		else if (node.left) {
 			return node.left;
@@ -68,21 +67,33 @@ class BinaryTree {
 		}	
 		return null;
 	}
+		
+	hasOnlyLeafs(node) {
+		return (!node.left || this.isLeaf(node.left)) && (!node.right || this.isLeaf(node.right));
+	}
+	
+	isLeaf(node) {
+		return !node.left && !node.right;
+	}
 	
 	maxParentNode(root) {
-		return !root.right
-      ? null
-      : (root.right.right
-        ? this.maxParentNode(root.right)
-        : root);
+		return this.isLeaf(root)
+			? null
+			: this.isLeaf(root)
+				? root 
+				: root.right
+					? this.maxParentNode(root.right)
+					: this.maxParentNode(root.left);
 	}
 	
 	minParentNode(root) {
-		return !root.left
-      ? null
-      : (root.left.left
-        ? this.minParentNode(root.left)
-        : root);
+		return this.isLeaf(root)
+			? null
+			: this.isLeaf(root.left)
+				? root 
+				: root.left
+					? this.maxParentNode(root.left)
+					: this.maxParentNode(root.right);
 	}
 	
 	preorderTraversal() {
@@ -97,6 +108,10 @@ class BinaryTree {
 			  ]
 			: [];
 	}
+	
+	toString() {
+		return this.root ? this.root.toString() : '<>';
+	}
 }
 
 class BinaryNode {
@@ -104,30 +119,37 @@ class BinaryNode {
 	constructor(value) {
 		this.value = value;
 	}
+	
+	toString() {
+		return this.value
+			+ (this.left || this.right 
+				? '<' + (this.left ? 'L' + this.left.toString() : '') 
+					  + (this.right ? 'R' + this.right.toString() : '') + '>'
+				: ''
+			  );
+	}
 }
 
-const tree = generatedTree();
-
-assertEquals('3,1,2,5,4,7,6,8', tree.preorderTraversal().toString());
-assertEquals('3,1,2,5,4,7,6', tree.remove(8).preorderTraversal().toString());
-assertEquals('3,1,5,4,7,6', tree.remove(2).preorderTraversal().toString());
-assertEquals('3,1,6,4,7', tree.remove(5).preorderTraversal().toString());
-assertEquals('4,1,6,7', tree.remove(3).preorderTraversal().toString());
-
-assertEquals('2,1,5,4,7,6,8', generatedTree().remove(3).preorderTraversal().toString());
-
-assertEquals('2,1,5,4,7,6,8', generatedTree().remove(3).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,7,6,8', generatedTree().preorderTraversal().toString());
+assertEquals('3,2,5,4,7,6,8', generatedTree().remove(1).preorderTraversal().toString());
+assertEquals('3,1,5,4,7,6,8', generatedTree().remove(2).preorderTraversal().toString());
+assertEquals('4,1,2,5,7,6,8', generatedTree().remove(3).preorderTraversal().toString());
+assertEquals('3,1,2,5,7,6,8', generatedTree().remove(4).preorderTraversal().toString());
+assertEquals('3,1,2,6,4,7,8', generatedTree().remove(5).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,7,8', generatedTree().remove(6).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,8,6', generatedTree().remove(7).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,7,6', generatedTree().remove(8).preorderTraversal().toString());
 
 function generatedTree() {
-  return new BinaryTree()
-    .add(3)
-    .add(1)
-    .add(5)
-    .add(2)
-    .add(4)
-    .add(7)
-    .add(8)
-    .add(6);
+	return new BinaryTree()
+		.add(3)
+		.add(1)
+		.add(5)
+		.add(2)
+		.add(4)
+		.add(7)
+		.add(8)
+		.add(6);
 }
 
 function assertEquals(expected, actual) {
