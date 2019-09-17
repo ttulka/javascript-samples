@@ -65,15 +65,13 @@ assertEquals('1,2', selectionsort([2,1]).toString());
 assertEquals('1,2,3,4,5', selectionsort([5,4,3,2,1]).toString());
 assertEquals('1,2,3,4,5', selectionsort([4,3,1,2,5]).toString());
 
-let c = 0;
-
 function mergesort(a) {
 	if (a.length < 2) {
 		return a;
 	}
-	const pivot = Math.floor(a.length / 2);
+	const middle = Math.floor(a.length / 2);
 	
-	return merge(mergesort(a.slice(0, pivot)), mergesort(a.slice(pivot)));
+	return merge(mergesort(a.slice(0, middle)), mergesort(a.slice(middle)));
 	
 	function merge(l, r) {
 		const sorted = [];
@@ -103,6 +101,52 @@ assertEquals('1,2', mergesort([2,1]).toString());
 assertEquals('1,2,3,4,5', mergesort([5,4,3,2,1]).toString());
 assertEquals('1,2,3,4,5', mergesort([4,3,1,2,5]).toString());
 
+function quicksort(a) {
+	if (a.length < 2) {
+		return a;
+	}
+	sort(a, 0, a.length - 1);
+	return a;
+	
+	function sort(a, li, ri) {
+		if (ri <= li) {
+			return;
+		}
+		k = partition(a, li, ri);
+		sort(a, li, k - 1);
+		sort(a, k + 1, ri);
+	}
+	
+	function partition(a, li, ri) {
+		let i = li;
+		let j = ri + 1;
+		while (true) {
+			while (a[++i] < a[li])
+				if (i === ri) break;
+			while (a[li] < a[--j])
+				if (j === li) break;
+			
+			if (i >= j) break;
+			
+			const v = a[i];
+			a[i] = a[j];
+			a[j] = v;
+		}
+		const v = a[li];
+		a[li] = a[j];
+		a[j] = v;
+		
+		return j;
+	}
+}
+
+assertEquals('', quicksort([]).toString());
+assertEquals('1', quicksort([1]).toString());
+assertEquals('1,2', quicksort([1,2]).toString());
+assertEquals('1,2', quicksort([2,1]).toString());
+assertEquals('1,2,3,4,5', quicksort([5,4,3,2,1]).toString());
+assertEquals('1,2,3,4,5', quicksort([4,3,1,2,5]).toString());
+
 function assertEquals(expected, actual) {
 	if (expected !== actual) {
 		throw new Error('Expected ' + expected + ', got ' + actual);
@@ -113,7 +157,7 @@ function assertEquals(expected, actual) {
 const LENGTH = 10000;
 const arr = Array(LENGTH).fill(0).map(x => Math.round(Math.random() * LENGTH));
 
-[bubblesort, insertionsort, selectionsort, mergesort].forEach(alg => {
+[bubblesort, insertionsort, selectionsort, mergesort, quicksort].forEach(alg => {
 	console.time(alg.name);
 	alg(arr);
 	console.timeEnd(alg.name);
