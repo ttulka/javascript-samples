@@ -153,7 +153,5 @@ function generatedTree() {
 }
 
 function assertEquals(expected, actual) {
-	if (expected !== actual) {
-		throw new Error('Expected ' + expected + ', got ' + actual);
-	}
+	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
 }

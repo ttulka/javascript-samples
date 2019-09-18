@@ -27,7 +27,6 @@ assertEquals(['a','b','c','d','ab','bc','cd','abc','bcd','abcd'], substrings('ab
 function assertEquals(expected, actual) {
 	expected = [...expected].sort();
 	actual = [...actual].sort();	
-	if (expected.length !== actual.length || !expected.every((x,i) => actual[i] === x)) {
-		throw new Error('Expected ' + expected.toString() + ', got ' + actual.toString());
-	}
+	console.assert(expected.length === actual.length && expected.every((x,i) => actual[i] === x),
+		'Expected ' + expected.toString() + ', got ' + actual.toString());
 }

@@ -148,9 +148,7 @@ assertEquals('1,2,3,4,5', quicksort([5,4,3,2,1]).toString());
 assertEquals('1,2,3,4,5', quicksort([4,3,1,2,5]).toString());
 
 function assertEquals(expected, actual) {
-	if (expected !== actual) {
-		throw new Error('Expected ' + expected + ', got ' + actual);
-	}
+	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
 }
 
 // performance measurements

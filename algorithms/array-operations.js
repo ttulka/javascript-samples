@@ -41,7 +41,5 @@ function arrayOperations(n, queries) {
 assertEquals(10, arrayOperations(10, [[1,5,3],[4,8,7],[6,9,1]]));
 
 function assertEquals(expected, actual) {
-	if (expected !== actual) {
-		throw new Error('Expected ' + expected + ', got ' + actual);
-	}
+	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
 }
