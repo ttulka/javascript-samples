@@ -1,4 +1,8 @@
 class BinaryTree {
+	
+	constructor(...arr) {
+		arr.forEach(x => this.add(x));
+	}
 		
 	add(value) {
 		this.root = this.addTo(value, this.root);
@@ -109,6 +113,26 @@ class BinaryTree {
 			: [];
 	}
 	
+	isBalanced() {		
+		return checkHeight(this.root) != Infinity;
+		
+		function checkHeight(root) {
+			if (!root) return -1;
+			
+			const leftHeight = checkHeight(root.left);
+			if (leftHeight === Infinity) return Infinity; // Pass error up
+			
+			const rightHeight = checkHeight(root.right);
+			if (rightHeight === Infinity) return Infinity; // Pass error up
+			
+			if (Math.abs(leftHeight - rightHeight) > 1) {
+				return Infinity; // Found error -> pass it back
+			} else {
+				return Math.max(leftHeight, rightHeight) + 1;
+			}
+		}
+	}
+	
 	toString() {
 		return this.root ? this.root.toString() : '<>';
 	}
@@ -130,7 +154,7 @@ class BinaryNode {
 	}
 }
 
-function minimalTree(sortedArr) {
+function minimalTree(...sortedArr) {
 	const tree = new BinaryTree();
 	fill(tree, sortedArr, 0, sortedArr.length);
 	return tree;
@@ -139,8 +163,6 @@ function minimalTree(sortedArr) {
 		if (l < r) {
 			const m = Math.floor((r - l) / 2 + l);
 			tree.add(arr[m]);
-			
-			console.log('fill',l,r,m);
 		
 			fill(tree, arr, l, m);
 			fill(tree, arr, m + 1, r);
@@ -159,19 +181,20 @@ assertEquals('3,1,2,5,4,7,8', sampleTree().remove(6).preorderTraversal().toStrin
 assertEquals('3,1,2,5,4,8,6', sampleTree().remove(7).preorderTraversal().toString());
 assertEquals('3,1,2,5,4,7,6', sampleTree().remove(8).preorderTraversal().toString());
 
-assertEquals('3,2,1,5,4', minimalTree([1,2,3,4,5]).preorderTraversal().toString());
-assertEquals('5,3,2,1,4,7,6,8', minimalTree([1,2,3,4,5,6,7,8]).preorderTraversal().toString());
+assertEquals('3,2,1,5,4', minimalTree(1,2,3,4,5).preorderTraversal().toString());
+assertEquals('5,3,2,1,4,7,6,8', minimalTree(1,2,3,4,5,6,7,8).preorderTraversal().toString());
+
+assertEquals(true, new BinaryTree(1).isBalanced());
+assertEquals(true, new BinaryTree(1,2).isBalanced());
+assertEquals(false, new BinaryTree(1,2,3).isBalanced());
+assertEquals(false, new BinaryTree(1,2,3,4,5).isBalanced());
+assertEquals(false, new BinaryTree(3,2,1).isBalanced());
+assertEquals(false, new BinaryTree(5,4,3,2,1).isBalanced());
+assertEquals(true, minimalTree(1,2,3,4,5).isBalanced());
+assertEquals(true, minimalTree(1,2,3,4,5,6,7,8).isBalanced());
 
 function sampleTree() {
-	return new BinaryTree()
-		.add(3)
-		.add(1)
-		.add(5)
-		.add(2)
-		.add(4)
-		.add(7)
-		.add(8)
-		.add(6);
+	return new BinaryTree(3,1,5,2,4,7,8,6);
 }
 
 function assertEquals(expected, actual) {
