@@ -1,12 +1,16 @@
 class LinkedList {
-	constructor(head, ...data) {
-		this.head = new Node(head);
-		
-		let prev = this.head;
-		for(let d of data) {
-			prev.next = new Node(d);
-			prev = prev.next;
-		};
+	constructor(...data) {
+		if (!data) {
+			this.head = null;
+		} else {
+			this.head = new Node(data[0]);
+			
+			let prev = this.head;
+			for(let i = 1; i < data.length; i++) {
+				prev.next = new Node(data[i]);
+				prev = prev.next;
+			};
+		}
 	}
 	
 	asArray() {
@@ -17,6 +21,19 @@ class LinkedList {
 			pointer = pointer.next;
 		}
 		return res;
+	}
+	
+	reversed() {
+		const list = new LinkedList();
+		
+		let p = this.head;
+		let n = new Node(p.data);
+		while (p.next) {
+			n = new Node(p.next.data, n);
+			p = p.next;
+		}
+		list.head = n;
+		return list;
 	}
 }
 
@@ -56,6 +73,11 @@ function circularNode(list) {
 }
 
 assertEquals('1,2,3', new LinkedList(1,2,3).asArray().toString());
+
+assertEquals('1', new LinkedList(1).reversed().asArray().toString());
+assertEquals('2,1', new LinkedList(1,2).reversed().asArray().toString());
+assertEquals('3,2,1', new LinkedList(1,2,3).reversed().asArray().toString());
+assertEquals('5,4,3,2,1', new LinkedList(1,2,3,4,5).reversed().asArray().toString());
 
 assertEquals(true, isPalindrom(new LinkedList(1)));
 assertEquals(true, isPalindrom(new LinkedList(1,1)));
