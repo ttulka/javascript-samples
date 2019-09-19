@@ -1,6 +1,6 @@
 class LinkedList {
 	constructor(...data) {
-		if (!data) {
+		if (!data || !data.length) {
 			this.head = null;
 		} else {
 			this.head = new Node(data[0]);
@@ -34,6 +34,16 @@ class LinkedList {
 		}
 		list.head = n;
 		return list;
+	}
+	
+	get length() {
+		let p = this.head;
+		let len = 0;
+		while (p) {
+			len++;
+			p = p.next;
+		}
+		return len;
 	}
 }
 
@@ -80,6 +90,11 @@ assertEquals('1', new LinkedList(1).reversed().asArray().toString());
 assertEquals('2,1', new LinkedList(1,2).reversed().asArray().toString());
 assertEquals('3,2,1', new LinkedList(1,2,3).reversed().asArray().toString());
 assertEquals('5,4,3,2,1', new LinkedList(1,2,3,4,5).reversed().asArray().toString());
+
+assertEquals(0, new LinkedList().length);
+assertEquals(1, new LinkedList(1).length);
+assertEquals(2, new LinkedList(1,2).length);
+assertEquals(5, new LinkedList(1,2,3,4,5).length);
 
 assertEquals(true, isPalindrom(new LinkedList(1)));
 assertEquals(true, isPalindrom(new LinkedList(1,1)));
