@@ -45,14 +45,16 @@ class Node {
 }
 
 function isPalindrom(list) {
-	const a = list.asArray();
-	let left = 0;
-	let right = a.length - 1;
-	do {
-		if (a[left] !== a[right]) {
+	const rev = list.reversed();
+	let p1 = list.head;
+	let p2 = rev.head;
+	while (p1) {
+		if (p1.data !== p2.data) {
 			return false;
-		}		
-	} while (left++ < right--);
+		}
+		p1 = p1.next;
+		p2 = p2.next;
+	}
 	return true;
 }
 
