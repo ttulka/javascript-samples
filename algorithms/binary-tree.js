@@ -130,17 +130,39 @@ class BinaryNode {
 	}
 }
 
-assertEquals('3,1,2,5,4,7,6,8', generatedTree().preorderTraversal().toString());
-assertEquals('3,2,5,4,7,6,8', generatedTree().remove(1).preorderTraversal().toString());
-assertEquals('3,1,5,4,7,6,8', generatedTree().remove(2).preorderTraversal().toString());
-assertEquals('4,1,2,5,7,6,8', generatedTree().remove(3).preorderTraversal().toString());
-assertEquals('3,1,2,5,7,6,8', generatedTree().remove(4).preorderTraversal().toString());
-assertEquals('3,1,2,6,4,7,8', generatedTree().remove(5).preorderTraversal().toString());
-assertEquals('3,1,2,5,4,7,8', generatedTree().remove(6).preorderTraversal().toString());
-assertEquals('3,1,2,5,4,8,6', generatedTree().remove(7).preorderTraversal().toString());
-assertEquals('3,1,2,5,4,7,6', generatedTree().remove(8).preorderTraversal().toString());
+function minimalTree(sortedArr) {
+	const tree = new BinaryTree();
+	fill(tree, sortedArr, 0, sortedArr.length);
+	return tree;
+	
+	function fill(tree, arr, l, r) {
+		if (l < r) {
+			const m = Math.floor((r - l) / 2 + l);
+			tree.add(arr[m]);
+			
+			console.log('fill',l,r,m);
+		
+			fill(tree, arr, l, m);
+			fill(tree, arr, m + 1, r);
+		}
+	}
+}
 
-function generatedTree() {
+assertEquals('3,1,2,5,4,7,6,8', sampleTree().preorderTraversal().toString());
+
+assertEquals('3,2,5,4,7,6,8', sampleTree().remove(1).preorderTraversal().toString());
+assertEquals('3,1,5,4,7,6,8', sampleTree().remove(2).preorderTraversal().toString());
+assertEquals('4,1,2,5,7,6,8', sampleTree().remove(3).preorderTraversal().toString());
+assertEquals('3,1,2,5,7,6,8', sampleTree().remove(4).preorderTraversal().toString());
+assertEquals('3,1,2,6,4,7,8', sampleTree().remove(5).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,7,8', sampleTree().remove(6).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,8,6', sampleTree().remove(7).preorderTraversal().toString());
+assertEquals('3,1,2,5,4,7,6', sampleTree().remove(8).preorderTraversal().toString());
+
+assertEquals('3,2,1,5,4', minimalTree([1,2,3,4,5]).preorderTraversal().toString());
+assertEquals('5,3,2,1,4,7,6,8', minimalTree([1,2,3,4,5,6,7,8]).preorderTraversal().toString());
+
+function sampleTree() {
 	return new BinaryTree()
 		.add(3)
 		.add(1)
