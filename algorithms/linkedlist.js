@@ -58,7 +58,9 @@ function isPalindrom(list) {
 	const rev = list.reversed();
 	let p1 = list.head;
 	let p2 = rev.head;
-	while (p1) {
+	let c = 0;
+	const middle = list.length / 2;
+	while (p1 && c++ < middle) {
 		if (p1.data !== p2.data) {
 			return false;
 		}
