@@ -146,6 +146,26 @@ class BinaryTree {
 		}
 	}
 	
+	isBST() {
+		return isBSTNode(this.root, NaN);		
+		
+		function isBSTNode(node, prev) {
+			if (!node) {
+				return true;
+			}
+			if (!isBSTNode(node.left, prev)) {
+				return false;
+			}			
+			if (node.value < prev) {
+				return false;
+			}			
+			if (!isBSTNode(node.right, node.value)) {
+				return false;
+			}
+			return true;
+		}
+	}
+	
 	toString() {
 		return this.root ? this.root.toString() : '<>';
 	}
@@ -186,6 +206,9 @@ function minimalTree(...sortedArr) {
 assertEquals('3,1,2,5,4,7,6,8', sampleTree().preorderTraversal().toString());
 assertEquals('1,2,3,4,5,6,7,8', sampleTree().inorderTraversal().toString());
 
+assertEquals(true, sampleTree().isBST());
+assertEquals(false, damagedTree().isBST());
+
 assertEquals('3,2,5,4,7,6,8', sampleTree().remove(1).preorderTraversal().toString());
 assertEquals('3,1,5,4,7,6,8', sampleTree().remove(2).preorderTraversal().toString());
 assertEquals('4,1,2,5,7,6,8', sampleTree().remove(3).preorderTraversal().toString());
@@ -209,6 +232,13 @@ assertEquals(true, minimalTree(1,2,3,4,5,6,7,8).isBalanced());
 
 function sampleTree() {
 	return new BinaryTree(3,1,5,2,4,7,8,6);
+}
+
+function damagedTree() {
+	const tree = new BinaryTree(2);
+	tree.root.left = new BinaryNode(3);
+	tree.root.right = new BinaryNode(1);
+	return tree;
 }
 
 function assertEquals(expected, actual) {
