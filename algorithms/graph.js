@@ -12,6 +12,35 @@ class Graph {
 		return this;
 	}
 	
+	dependenciesOrder() {
+		const res = [];
+		const nodes = [...this.nodes];
+		const deps = new Map(this.dependencies);
+		
+		while (true) {
+			const n = nodes.find(n => !deps.has(n));
+			if (!n) {
+				break;
+			}
+			res.unshift(n);
+			
+			// remove the dependency
+			nodes.splice(nodes.indexOf(n), 1);
+			
+			deps.forEach((v,k) => {
+				if (v.includes(n)) {
+					if (v.length === 1) {
+						deps.delete(k);
+					} else {
+						v.splice(v.indexOf(n), 1);
+						deps.set(k, v);
+					}
+				}
+			});
+		}				
+		return res;
+	}
+	
 	toString() {
 		return this.nodes
 			.map(n => n + (this.dependencies.has(n) ? '[' + this.dependencies.get(n) + ']' : ''))
@@ -33,6 +62,8 @@ function sampleGraph() {
 }
 
 console.log(sampleGraph().toString());
+
+assertEquals('d,g,f,c,b,a,e', sampleGraph().dependenciesOrder().toString());
 
 function assertEquals(expected, actual) {
 	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
