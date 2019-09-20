@@ -5,112 +5,125 @@ class BinaryTree {
 	}
 		
 	add(value) {
-		this.root = this.addTo(value, this.root);
-    return this;
-	}
-	
-	addTo(value, node) {
-		if (!node) {
-			return new BinaryNode(value);
-		}
+		this.root = addTo(value, this.root);
+		return this;
 		
-		if (value > node.value) {
-			node.right = this.addTo(value, node.right);
-		} else {
-			node.left = this.addTo(value, node.left);
+		function addTo(value, node) {
+			if (!node) {
+				return new BinaryNode(value);
+			}
+			
+			if (value > node.value) {
+				node.right = addTo(value, node.right);
+			} else {
+				node.left = addTo(value, node.left);
+			}
+			return node;
 		}
-		return node;
 	}
 	
 	remove(value) {
-		this.root = this.removeFrom(value, this.root);
+		this.root = removeFrom(value, this.root);
 		return this;
-	}
 	
-	removeFrom(value, node) {
-		if (!node) {
+		function removeFrom(value, node) {
+			if (!node) {
+				return null;
+			}
+			if (node.value === value) {
+			  return removeAndRewindNode(value, node);      
+			
+			} else if (value > node.value) {
+				node.right = removeFrom(value, node.right);
+				
+			} else {
+				node.left = removeFrom(value, node.left);
+			}		
+			return node;
+		}
+		
+		function removeAndRewindNode(value, node) {
+			if (node.left && node.right) {
+				if (hasOnlyLeafs(node)) {
+					node.value = node.right.value;
+					node.right = null;
+					return node;
+				}			
+				const parentOfMax = maxParentNode(node.left);
+				if (parentOfMax) {
+					node.value = parentOfMax.right.value;
+					parentOfMax.right = parentOfMax.right.left;
+					return node;
+				}
+				const parentOfMin = minParentNode(node.right);
+				if (parentOfMin) {
+					node.value = parentOfMin.left.value;
+					parentOfMin.left = parentOfMin.left.right;
+					return node;
+				}			
+			}
+			else if (node.left) {
+				return node.left;
+			}	
+			else if (node.right) {
+				return node.right;
+			}	
 			return null;
 		}
-		if (node.value === value) {
-		  return this.removeAndRewindNode(value, node);      
 		
-		} else if (value > node.value) {
-			node.right = this.removeFrom(value, node.right);
-			
-		} else {
-			node.left = this.removeFrom(value, node.left);
-		}		
-		return node;
-	}
-	
-	removeAndRewindNode(value, node) {
-		if (node.left && node.right) {
-			if (this.hasOnlyLeafs(node)) {
-				node.value = node.right.value;
-				node.right = null;
-				return node;
-			}			
-			const parentOfMax = this.maxParentNode(node.left);
-			if (parentOfMax) {
-				node.value = parentOfMax.right.value;
-				parentOfMax.right = parentOfMax.right.left;
-				return node;
-			}
-			const parentOfMin = this.minParentNode(node.right);
-			if (parentOfMin) {
-				node.value = parentOfMin.left.value;
-				parentOfMin.left = parentOfMin.left.right;
-				return node;
-			}			
+		function hasOnlyLeafs(node) {
+			return (!node.left || isLeaf(node.left)) && (!node.right || isLeaf(node.right));
 		}
-		else if (node.left) {
-			return node.left;
-		}	
-		else if (node.right) {
-			return node.right;
-		}	
-		return null;
-	}
 		
-	hasOnlyLeafs(node) {
-		return (!node.left || this.isLeaf(node.left)) && (!node.right || this.isLeaf(node.right));
-	}
+		function isLeaf(node) {
+			return !node.left && !node.right;
+		}
 	
-	isLeaf(node) {
-		return !node.left && !node.right;
-	}
-	
-	maxParentNode(root) {
-		return this.isLeaf(root)
-			? null
-			: this.isLeaf(root)
-				? root 
-				: root.right
-					? this.maxParentNode(root.right)
-					: this.maxParentNode(root.left);
-	}
-	
-	minParentNode(root) {
-		return this.isLeaf(root)
-			? null
-			: this.isLeaf(root.left)
-				? root 
-				: root.left
-					? this.maxParentNode(root.left)
-					: this.maxParentNode(root.right);
+		function maxParentNode(root) {
+			return isLeaf(root)
+				? null
+				: isLeaf(root)
+					? root 
+					: root.right
+						? maxParentNode(root.right)
+						: maxParentNode(root.left);
+		}
+		
+		function minParentNode(root) {
+			return isLeaf(root)
+				? null
+				: isLeaf(root.left)
+					? root 
+					: root.left
+						? maxParentNode(root.left)
+						: maxParentNode(root.right);
+		}
 	}
 	
 	preorderTraversal() {
-		return this.preorderTraversalFrom(this.root);
+		return preorder(this.root);
+	
+		function preorder(node) {
+			return node
+				? [node.value, 
+				   ...preorder(node.left), 
+				   ...preorder(node.right)
+				  ]
+				: [];
+		}
 	}
 	
-	preorderTraversalFrom(node) {
-		return node
-			? [node.value, 
-				...this.preorderTraversalFrom(node.left), 
-				...this.preorderTraversalFrom(node.right)
-			  ]
-			: [];
+	inorderTraversal() {
+		return inorder(this.root);
+	
+		function inorder(node) {
+			return node
+				? [...inorder(node.left), 
+				   node.value, 
+				   ...inorder(node.right)
+				  ]
+				: [];
+		}
 	}
 	
 	isBalanced() {		
@@ -171,6 +184,7 @@ function minimalTree(...sortedArr) {
 }
 
 assertEquals('3,1,2,5,4,7,6,8', sampleTree().preorderTraversal().toString());
+assertEquals('1,2,3,4,5,6,7,8', sampleTree().inorderTraversal().toString());
 
 assertEquals('3,2,5,4,7,6,8', sampleTree().remove(1).preorderTraversal().toString());
 assertEquals('3,1,5,4,7,6,8', sampleTree().remove(2).preorderTraversal().toString());
