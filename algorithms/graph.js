@@ -14,31 +14,26 @@ class Graph {
 	
 	dependenciesOrder() {
 		const res = [];
-		const nodes = [...this.nodes];
-		const deps = new Map(this.dependencies);
-		
-		while (true) {
-			const n = nodes.find(n => !deps.has(n));
-			if (!n) {
-				break;
-			}
-			res.unshift(n);
+		const deps = Array.from(this.dependencies.values())
+			.reduce((a,c) => [...a,...c]);		
 			
-			// remove the dependency
-			nodes.splice(nodes.indexOf(n), 1);
-			
-			deps.forEach((v,k) => {
-				if (v.includes(n)) {
-					if (v.length === 1) {
-						deps.delete(k);
-					} else {
-						v.splice(v.indexOf(n), 1);
-						deps.set(k, v);
-					}
-				}
+		this.nodes
+			.filter(n => !deps.includes(n))	// nodes that are no dependencies
+			.forEach(n => {
+				addDependencies(n, this.dependencies, res);
+				res.push(n);				
 			});
-		}				
 		return res;
+		
+		function addDependencies(node, depsMap, res) {
+			const deps = depsMap.get(node) || [];
+			deps.forEach(d => {
+				if (!res.includes(d)) {
+					addDependencies(d, depsMap, res);
+					res.push(d);
+				}				
+			});
+		}
 	}
 	
 	toString() {
@@ -49,13 +44,14 @@ class Graph {
 }
 
 function sampleGraph() {
-	const g = new Graph('a','b','c','d','e','f','g')
+	const g = new Graph('a','b','c','d','e','f','g','h')
 		.addDependency('f', 'a')
 		.addDependency('f', 'b')
 		.addDependency('f', 'c')
 		.addDependency('c', 'a')
 		.addDependency('b', 'a')
 		.addDependency('b', 'e')
+		.addDependency('b', 'h')
 		.addDependency('a', 'e')
 		.addDependency('d', 'g');	
 	return g;
@@ -63,7 +59,7 @@ function sampleGraph() {
 
 console.log(sampleGraph().toString());
 
-assertEquals('d,g,f,c,b,a,e', sampleGraph().dependenciesOrder().toString());
+assertEquals('g,d,e,a,h,b,c,f', sampleGraph().dependenciesOrder().toString());
 
 function assertEquals(expected, actual) {
 	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
