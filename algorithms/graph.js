@@ -13,26 +13,31 @@ class Graph {
 	}
 	
 	dependenciesOrder() {
-		const res = [];
+		const resolved = [];
 		const deps = Array.from(this.dependencies.values())
 			.reduce((a,c) => [...a,...c]);		
 			
 		this.nodes
 			.filter(n => !deps.includes(n))	// nodes that are no dependencies
 			.forEach(n => {
-				addDependencies(n, this.dependencies, res);
-				res.push(n);				
+				addDependencies(n, this.dependencies, resolved);
+				resolved.push(n);				
 			});
-		return res;
+		return resolved;
 		
-		function addDependencies(node, depsMap, res) {
+		function addDependencies(node, depsMap, resolved, seen = []) {
 			const deps = depsMap.get(node) || [];
 			deps.forEach(d => {
-				if (!res.includes(d)) {
-					addDependencies(d, depsMap, res);
-					res.push(d);
+				if (seen.includes(d)) {
+					throw new Error('Cyclic dependency!');
+				}
+				seen.push(d);
+				if (!resolved.includes(d)) {
+					addDependencies(d, depsMap, resolved, seen);					
+					resolved.push(d);
 				}				
 			});
+			seen.splice(0); // delete seen for the next path
 		}
 	}
 	
@@ -53,6 +58,8 @@ function sampleGraph() {
 		.addDependency('b', 'e')
 		.addDependency('b', 'h')
 		.addDependency('a', 'e')
+		//.addDependency('c', 'a') // cyclic
+		//.addDependency('e', 'c') // cyclic
 		.addDependency('d', 'g');	
 	return g;
 }
