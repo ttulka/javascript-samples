@@ -53,10 +53,13 @@ assertEquals('1,0,1', asBinary(5).toString());
 assertEquals('1,0,0,0', asBinary(8).toString());
 assertEquals('1,0,0,0,1', asBinary(17).toString());
 
-assertEquals(8, longestSequenceOf1s(0b11011101111));
+assertEquals(1, longestSequenceOf1s(0b10000000001));
+assertEquals(3, longestSequenceOf1s(0b01110011100));
+assertEquals(4, longestSequenceOf1s(0b01101101101));
 assertEquals(5, longestSequenceOf1s(0b01011100111));
 assertEquals(6, longestSequenceOf1s(0b11000111111));
 assertEquals(7, longestSequenceOf1s(0b01111101100));
+assertEquals(8, longestSequenceOf1s(0b11011101111));
 
 function assertEquals(expected, actual) {
 	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
