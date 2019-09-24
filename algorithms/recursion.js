@@ -65,6 +65,28 @@ assertEquals(['()'], parentheses(1));
 assertEquals(['(())','()()'], parentheses(2));
 assertEquals(['((()))','()(())','(()())','(())()','()()()'], parentheses(3));
 
+function coinChanges(amount, coins, index = 0) {
+	if (index >= coins.length) {	// last coin
+		return amount === 0 ? 1 : 0;
+	}
+	let changeWays = 0;	
+	for (let i = 0; i * coins[index] <= amount; i++) {		
+		changeWays += coinChanges(amount - i * coins[index], coins, index + 1);
+	}
+	return changeWays;
+}
+
+assertEquals(1, coinChanges(1, [5,3,1]));
+assertEquals(1, coinChanges(2, [5,3,1]));
+assertEquals(2, coinChanges(3, [5,3,1]));
+assertEquals(2, coinChanges(4, [5,3,1]));
+assertEquals(3, coinChanges(5, [5,3,1]));
+assertEquals(4, coinChanges(6, [5,3,1]));
+assertEquals(4, coinChanges(7, [5,3,1]));
+assertEquals(5, coinChanges(8, [5,3,1]));
+assertEquals(6, coinChanges(9, [5,3,1]));
+assertEquals(7, coinChanges(10, [5,3,1]));
+
 function assertEquals(expected, actual) {
 	expected = JSON.stringify(expected);
 	actual = JSON.stringify(actual);
