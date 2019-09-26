@@ -147,6 +147,76 @@ assertEquals('1,2', quicksort([2,1]).toString());
 assertEquals('1,2,3,4,5', quicksort([5,4,3,2,1]).toString());
 assertEquals('1,2,3,4,5', quicksort([4,3,1,2,5]).toString());
 
+// You are given two sorted arrays, A and B; merge B with A in sorted order.
+function sortedMerge(a, b) {
+	const res = [];
+	let i = 0;
+	let j = 0;
+	while (i < a.length && j < b.length) {
+		if (a[i] < b[j]) {
+			res.push(a[i++]);
+		} else {
+			res.push(b[j++]);
+		}
+	}
+	while (i < a.length) {
+		res.push(a[i++]);
+	}
+	while (j < b.length) {
+		res.push(b[j++]);
+	}
+	return res;
+}
+
+assertEquals('', sortedMerge([],[]).toString());
+assertEquals('1', sortedMerge([1],[]).toString());
+assertEquals('1', sortedMerge([],[1]).toString());
+assertEquals('1,2', sortedMerge([1],[2]).toString());
+assertEquals('1,2', sortedMerge([2],[1]).toString());
+assertEquals('1,2,3', sortedMerge([1,2],[3]).toString());
+assertEquals('1,2,3', sortedMerge([3],[1,2]).toString());
+assertEquals('1,2,3', sortedMerge([2,3],[1]).toString());
+assertEquals('1,2,3,4', sortedMerge([2,3],[1,4]).toString());
+
+// You are given two sorted arrays, A and B; A has a large enough buffer at the end to hold B.
+// Merge B into A in sorted order.
+function sortedMerge2(a, b) {
+	let aLength = a.length - b.length;
+	
+	// shift items of A to the end
+	for (let i = aLength - 1; i >= 0; i--) {
+		a[i + b.length] = a[i];
+	}
+	
+	let pos = 0;
+	let i = b.length;
+	let j = 0;
+	while (i < a.length && j < b.length) {
+		if (a[i] < b[j]) {
+			a[pos++] = a[i++];
+		} else {
+			a[pos++] = b[j++];
+		}
+	}
+	while (i < a.length) {
+		a[pos++] = a[i++];
+	}
+	while (j < b.length) {
+		a[pos++] = b[j++];
+	}
+	return a;
+}
+
+assertEquals('', sortedMerge2([],[]).toString());
+assertEquals('1', sortedMerge2([1],[]).toString());
+assertEquals('1', sortedMerge2([null],[1]).toString());
+assertEquals('1,2', sortedMerge2([1,null],[2]).toString());
+assertEquals('1,2', sortedMerge2([2,null],[1]).toString());
+assertEquals('1,2,3', sortedMerge2([1,2,null],[3]).toString());
+assertEquals('1,2,3', sortedMerge2([3,null,null],[1,2]).toString());
+assertEquals('1,2,3', sortedMerge2([2,3,null],[1]).toString());
+assertEquals('1,2,3,4', sortedMerge2([2,3,null,null],[1,4]).toString());
+
 function assertEquals(expected, actual) {
 	console.assert(expected === actual, 'Expected ' + expected + ', got ' + actual);
 }
