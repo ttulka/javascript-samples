@@ -189,8 +189,8 @@ function sortedMerge2(a, b) {
 	}
 	
 	let pos = 0;
-	let i = b.length;
-	let j = 0;
+	let i = b.length,
+		j = 0;
 	while (i < a.length && j < b.length) {
 		if (a[i] < b[j]) {
 			a[pos++] = a[i++];

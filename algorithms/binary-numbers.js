@@ -1,6 +1,6 @@
 function asBinary(num) {
-	const maxLevel = Math.round(Math.sqrt(num)) + 1;
-	const res = [];
+	const maxLevel = Math.round(Math.sqrt(num)) + 1,
+		  res = [];
 	
 	while (res.length < maxLevel) {
 		res.unshift((num >>> res.length) & 1);
@@ -14,12 +14,10 @@ function asBinary(num) {
 // Flip Bit to Win: You have an integer and you can flip exactly one bit from a O to a 1. 
 // Find the length of the longest sequence of 1 s you could create.
 function longestSequenceOf1s(num) {
-	let prev = 0;
-	let curr = 0;
-	let max = 0;
+	let prev = 0, curr = 0, max = 0,		
+		i = 0,
+		prevBit = 0;
 		
-	let i = 0;
-	let prevBit = 0;
 	while (num >> i > 0) {
 		const currBit = num & 1 << i;
 		i++;

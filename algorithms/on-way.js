@@ -13,8 +13,7 @@ function oneWay(a, b) {
 	if (Math.abs(a.length - b.length) > 1) return false;
 	if (a === b) return true;
 	
-	let i = 0;
-	let j = 0;
+	let i = 0, j = 0;
 	let diffs = 0;
 			
 	while (i < a.length && j < b.length) {
