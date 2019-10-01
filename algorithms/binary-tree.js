@@ -203,6 +203,35 @@ function minimalTree(...sortedArr) {
 	}
 }
 
+function printTree(tree) {
+	const queue = [tree.root];	
+	let res = '';	
+	
+	let currentCount = 1, nextCount = 0;
+	
+	while (queue.length) {
+		while (currentCount-- > 0) {
+			const node = queue.shift();
+			res += node.value + ' ';
+			
+			if (currentCount === 0) {
+				res += '\n';
+			}
+			if (node.left) {
+				queue.push(node.left);
+				nextCount++;
+			}
+			if (node.right) {
+				queue.push(node.right);
+				nextCount++;
+			}
+		}	
+		currentCount = nextCount;
+		nextCount = 0;
+	}
+	console.log(res);
+}
+
 assertEquals('3,1,2,5,4,7,6,8', sampleTree().preorderTraversal().toString());
 assertEquals('1,2,3,4,5,6,7,8', sampleTree().inorderTraversal().toString());
 
@@ -229,6 +258,8 @@ assertEquals(false, new BinaryTree(3,2,1).isBalanced());
 assertEquals(false, new BinaryTree(5,4,3,2,1).isBalanced());
 assertEquals(true, minimalTree(1,2,3,4,5).isBalanced());
 assertEquals(true, minimalTree(1,2,3,4,5,6,7,8).isBalanced());
+
+printTree(sampleTree());
 
 function sampleTree() {
 	return new BinaryTree(3,1,5,2,4,7,8,6);
