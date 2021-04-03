@@ -28,9 +28,6 @@ export default class Compiler {
     this.module.addGlobal('p', binaryen.i32, true, this.module.i32.const(0));  // pointer  
     
     this.module.setMemory(1, 3, 'memory');  // TODO remove export name
-    
-    // const p = this.module.global.get('p', binaryen.i32);
-    // const exp = this.module.i32.store(0, null, p, this.module.i32.const(42));
   }
 
   addMainFunction() {
