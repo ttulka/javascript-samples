@@ -23,7 +23,6 @@ function compile(input, moduleName) {
   const parser = new Parser();
   const ast = parser.parse(input);
 
-console.log(JSON.stringify(ast));
   const compiler = new Compiler();
   return compiler.compile(ast, moduleName);
 }

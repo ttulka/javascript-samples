@@ -1,6 +1,6 @@
 # Brainfuck to WebAssembly Compiler
 
-Binaryen based compiler from brainfuck to WebAssembly (Wasm).
+[Binaryen](https://github.com/WebAssembly/binaryen) based compiler from brainfuck to WebAssembly (Wasm).
 
 Demo project.
 

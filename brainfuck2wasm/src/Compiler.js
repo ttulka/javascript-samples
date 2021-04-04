@@ -11,7 +11,7 @@ export default class Compiler {
     const body = this.compileBranch(ast);
     this.addMainFunction(body);
 
-    console.log(this.module.emitText());
+    console.debug(this.module.emitText());
 
     if (!this.module.validate()) throw new SyntaxError('Module invalid.');
 
@@ -80,16 +80,16 @@ export default class Compiler {
 
   increment(amount) {
     const p = this.module.global.get('p', binaryen.i32);
-    const cur = this.module.i32.load8_u(0, 1, p);
-    const add = this.module.i32.add(cur, this.module.i32.const(amount));
+    const val = this.module.i32.load8_u(0, 1, p);
+    const add = this.module.i32.add(val, this.module.i32.const(amount));
     const sto = this.module.i32.store8(0, 1, p, add);
     return sto;
   }
 
   decrement(amount) {
     const p = this.module.global.get('p', binaryen.i32);
-    const cur = this.module.i32.load8_u(0, 1, p);
-    const sub = this.module.i32.sub(cur, this.module.i32.const(amount));
+    const val = this.module.i32.load8_u(0, 1, p);
+    const sub = this.module.i32.sub(val, this.module.i32.const(amount));
     const sto = this.module.i32.store8(0, 1, p, sub);
     return sto;
   }
@@ -110,8 +110,8 @@ export default class Compiler {
 
   output() {
     const p = this.module.global.get('p', binaryen.i32);
-    const cur = this.module.i32.load8_u(0, 1, p);
-    const cal = this.module.call('output', [cur], binaryen.none);
+    const val = this.module.i32.load8_u(0, 1, p);
+    const cal = this.module.call('output', [val], binaryen.none);
     return cal;
   }
 
@@ -125,19 +125,20 @@ export default class Compiler {
   loop(branch, idx) {
     const label = 'l' + idx;
     const commands = this.compileBranch(branch);
+
     const p = this.module.global.get('p', binaryen.i32);
-    const cur = this.module.i32.load8_u(0, 1, p);
-    const ifn = this.module.i32.ne(cur, this.module.i32.const(0));
-    const bre = this.module.break(label, ifn);
-    const blo = this.module.block(null, [...commands, bre]);
-    const loo = this.module.loop(label, blo);
-    return loo;
+    const val = this.module.i32.load8_u(0, 1, p);
+    const br = this.module.br_if(label, val);
+
+    const block = this.module.block(null, [...commands, br]);
+    const loop = this.module.loop(label, block);
+    return loop;
   }
 
   debug() {
     const p = this.module.global.get('p', binaryen.i32);
-    const cur = this.module.i32.load8_u(0, 1, p);
-    const cal = this.module.call('debug', [p, cur], binaryen.none);
+    const val = this.module.i32.load8_u(0, 1, p);
+    const cal = this.module.call('debug', [p, val], binaryen.none);
     return cal;
   }
 }
