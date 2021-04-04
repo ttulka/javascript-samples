@@ -47,7 +47,18 @@ export default class Parser {
         if (this.ast.pop().kind !== 'loop') throw new SyntaxError('unmatched ]');
 
       } else {
-        branch.children.push(cmd);  // TODO group commands
+        let eliminated = false;
+        if (branch.children.length) {
+          const last = branch.children[branch.children.length - 1];
+          if (last.kind === cmd.kind) {
+            last.amount++;
+            eliminated = true;
+          }
+        }
+        if (!eliminated) {
+          cmd.amount = 1;
+          branch.children.push(cmd);
+        }
       }
     }
   }

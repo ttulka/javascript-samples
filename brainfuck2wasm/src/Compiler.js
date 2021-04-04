@@ -15,7 +15,7 @@ export default class Compiler {
 
     if (!this.module.validate()) throw new SyntaxError('Module invalid.');
 
-    //module.optimize();
+    this.module.optimize();
 
     return this.module.emitBinary();
   }
@@ -39,23 +39,22 @@ export default class Compiler {
   compileBranch(branch) {
     const body = [];
     branch.children.forEach(cmd => {
-        console.log('CMD', cmd);
         let c;
         switch (cmd.kind) {
           case '+':
-            c = this.increment();
+            c = this.increment(cmd.amount);
             body.push(c);
             break;
           case '-':
-            c = this.decrement();
+            c = this.decrement(cmd.amount);
             body.push(c);
             break;
           case '>':
-            c = this.moveRight();
+            c = this.moveRight(cmd.amount);
             body.push(c);
             break;
           case '<':
-            c = this.moveLeft();
+            c = this.moveLeft(cmd.amount);
             body.push(c);
             break;
           case '.':
@@ -79,32 +78,32 @@ export default class Compiler {
     return body;
   }
 
-  increment() {
+  increment(amount) {
     const p = this.module.global.get('p', binaryen.i32);
     const cur = this.module.i32.load8_u(0, 1, p);
-    const add = this.module.i32.add(cur, this.module.i32.const(1));
+    const add = this.module.i32.add(cur, this.module.i32.const(amount));
     const sto = this.module.i32.store8(0, 1, p, add);
     return sto;
   }
 
-  decrement() {
+  decrement(amount) {
     const p = this.module.global.get('p', binaryen.i32);
     const cur = this.module.i32.load8_u(0, 1, p);
-    const sub = this.module.i32.sub(cur, this.module.i32.const(1));
+    const sub = this.module.i32.sub(cur, this.module.i32.const(amount));
     const sto = this.module.i32.store8(0, 1, p, sub);
     return sto;
   }
 
-  moveRight() {
+  moveRight(amount) {
     const p = this.module.global.get('p', binaryen.i32);
-    const add = this.module.i32.add(p, this.module.i32.const(1));
+    const add = this.module.i32.add(p, this.module.i32.const(amount));
     const set = this.module.global.set('p', add);
     return set;
   }
 
-  moveLeft() {
+  moveLeft(amount) {
     const p = this.module.global.get('p', binaryen.i32);
-    const sub = this.module.i32.sub(p, this.module.i32.const(1));
+    const sub = this.module.i32.sub(p, this.module.i32.const(amount));
     const set = this.module.global.set('p', sub);
     return set;
   }
