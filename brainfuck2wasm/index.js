@@ -11,16 +11,11 @@ function* readChar(str = '') {
 
 WebAssembly
   .instantiate(fs.readFileSync(wasm), {
-    hello: {
+    main: {
       input: () => inputGen.next().value,
-      output: c => console.log('OUT', String.fromCharCode(c)), //process.stdout.write(String.fromCharCode(c));
+      output: c => process.stdout.write(String.fromCharCode(c)),
       debug: (p, v) => console.log('DEBUG', p, v)  
     }
   })
-  .then(({ instance }) => {
-      console.log('EXPORTS', instance.exports);
-
-      console.log(instance.exports.main());
-      console.log('MEMORY', instance.exports.memory.buffer);
-  })
-  .catch(ex => console.error('Error while loading Wasm file:', ex));
+  .then(({ instance }) => instance.exports.main())
+  .catch(err => console.error('Error while loading Wasm file:', err));

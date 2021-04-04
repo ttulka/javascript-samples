@@ -35,14 +35,19 @@ export default class Parser {
       const cmd = { kind };
 
       const branch = this.ast[this.ast.length - 1];
-      branch.children.push(cmd);  // TODO group commands
 
       if (kind === '[') {
+        cmd.kind = 'loop';
         cmd.children = [];
+        branch.children.push(cmd);
+
         this.ast.push(cmd);
       
       } else if (kind === ']') {
-        if (this.ast.pop().kind !== '[') throw new SyntaxError('unmatched ]');
+        if (this.ast.pop().kind !== 'loop') throw new SyntaxError('unmatched ]');
+
+      } else {
+        branch.children.push(cmd);  // TODO group commands
       }
     }
   }

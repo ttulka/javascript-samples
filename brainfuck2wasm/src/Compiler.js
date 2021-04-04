@@ -2,79 +2,81 @@ import binaryen from 'binaryen';
 
 export default class Compiler {
 
-  compile(ast, moduleName) {
-    this.moduleName = moduleName;
+  compile(ast) {
+    this.loopIdx = 0;
     this.module = new binaryen.Module();
 
     this.initModule();
-    this.compileAst(ast);
-    this.addMainFunction();
+
+    const body = this.compileBranch(ast);
+    this.addMainFunction(body);
+
+    console.log(this.module.emitText());
 
     if (!this.module.validate()) throw new SyntaxError('Module invalid.');
 
     //module.optimize();
-    console.log(this.module.emitText());
 
     return this.module.emitBinary();
   }
 
   initModule() {
-    this.body = [];
-
-    this.module.addFunctionImport('input', this.moduleName, 'input', binaryen.none, binaryen.i32);
-    this.module.addFunctionImport('output', this.moduleName, 'output', binaryen.i32, binaryen.none);
-    this.module.addFunctionImport('debug', this.moduleName, 'debug', binaryen.createType([binaryen.i32, binaryen.i32]), binaryen.none);
+    this.module.addFunctionImport('input', 'main', 'input', binaryen.none, binaryen.i32);
+    this.module.addFunctionImport('output', 'main', 'output', binaryen.i32, binaryen.none);
+    this.module.addFunctionImport('debug', 'main', 'debug', binaryen.createType([binaryen.i32, binaryen.i32]), binaryen.none);
     
     this.module.addGlobal('p', binaryen.i32, true, this.module.i32.const(0));  // pointer  
     
-    this.module.setMemory(1, 3, 'memory');  // TODO remove export name
+    this.module.setMemory(1, 1);
   }
 
-  addMainFunction() {
-    const block = this.module.block('exec', this.body);
+  addMainFunction(body) {
+    const block = this.module.block('exec', body);
     this.module.addFunction('main', binaryen.none, binaryen.none, [], block);
     this.module.addFunctionExport('main', 'main');
   }
 
-  compileAst(ast) {
-    ast.children.forEach(cmd => {
+  compileBranch(branch) {
+    const body = [];
+    branch.children.forEach(cmd => {
         console.log('CMD', cmd);
         let c;
         switch (cmd.kind) {
           case '+':
             c = this.increment();
-            this.body.push(c);
+            body.push(c);
             break;
           case '-':
             c = this.decrement();
-            this.body.push(c);
+            body.push(c);
             break;
           case '>':
             c = this.moveRight();
-            this.body.push(c);
+            body.push(c);
             break;
           case '<':
             c = this.moveLeft();
-            this.body.push(c);
+            body.push(c);
             break;
           case '.':
             c = this.output();
-            this.body.push(c);
+            body.push(c);
             break;
           case ',':
             c = this.input();
-            this.body.push(c);
+            body.push(c);
+            break;
+          case 'loop':
+            c = this.loop(cmd, this.loopIdx++);
+            body.push(c);
             break;
           case '#':
             c = this.debug();
-            this.body.push(c);
+            body.push(c);
             break;
         }
     });
-    //   if (cmd.kind === 'LoopBegin') {
-    //     const loop = compileLoop();
-    //     return this.module.loop(null, loop);
-    //   }
+    return body;
   }
 
   increment() {
@@ -119,6 +121,18 @@ export default class Compiler {
     const cal = this.module.call('input', [], binaryen.i32);
     const sto = this.module.i32.store8(0, null, p, cal);
     return sto;
+  }
+
+  loop(branch, idx) {
+    const label = 'l' + idx;
+    const commands = this.compileBranch(branch);
+    const p = this.module.global.get('p', binaryen.i32);
+    const cur = this.module.i32.load8_u(0, 1, p);
+    const ifn = this.module.i32.ne(cur, this.module.i32.const(0));
+    const bre = this.module.break(label, ifn);
+    const blo = this.module.block(null, [...commands, bre]);
+    const loo = this.module.loop(label, blo);
+    return loo;
   }
 
   debug() {

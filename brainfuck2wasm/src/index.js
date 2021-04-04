@@ -14,7 +14,7 @@ export function main(args) {
   const input = fs.readFileSync(sourceFile, 'utf-8');
   const moduleName = sourceFile.slice(0, sourceFile.lastIndexOf('.'));
   
-  const binary = compile(input, moduleName);
+  const binary = compile(input);
 
   fs.writeFileSync(`${moduleName}.wasm`, binary);
 }
