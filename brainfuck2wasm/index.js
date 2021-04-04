@@ -5,7 +5,7 @@ const wasm = args[0];
 const input = args[1];
 const inputGen = readChar(input);
 
-function* readChar(str) {    
+function* readChar(str = '') {    
   for (let s of str.split('')) yield s.charCodeAt();
 }
 

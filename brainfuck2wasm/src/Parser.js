@@ -16,7 +16,7 @@ export default class Parser {
   parse(input) {
     this.input = input;
     this.index = 0;
-    this.ast = [{ kind: 'root', commands: [] }];
+    this.ast = [{ kind: 'root', children: [] }];
 
     while (!this.eof()) {
       this.parseCommand();
@@ -31,16 +31,17 @@ export default class Parser {
   parseCommand() {
     let code;
     if (!this.isWhitespace(code = this.input[this.index++].charCodeAt())) {
-      const cmd = this.commandFor(code);
-      const branch = { kind: cmd };
+      const kind = this.commandFor(code);
+      const cmd = { kind };
 
-      this.ast[this.ast.length - 1].commands.push(branch);
+      const branch = this.ast[this.ast.length - 1];
+      branch.children.push(cmd);  // TODO group commands
 
-      if (cmd === '[') {
-        branch.commands = [];
-        this.ast.push(branch);
+      if (kind === '[') {
+        cmd.children = [];
+        this.ast.push(cmd);
       
-      } else if (cmd === ']') {
+      } else if (kind === ']') {
         if (this.ast.pop().kind !== '[') throw new SyntaxError('unmatched ]');
       }
     }

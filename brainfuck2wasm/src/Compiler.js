@@ -37,29 +37,37 @@ export default class Compiler {
   }
 
   compileAst(ast) {
-    ast.commands.forEach(cmd => {
+    ast.children.forEach(cmd => {
         console.log('CMD', cmd);
+        let c;
         switch (cmd.kind) {
           case '+':
-            this.increment();
+            c = this.increment();
+            this.body.push(c);
             break;
           case '-':
-            this.decrement();
+            c = this.decrement();
+            this.body.push(c);
             break;
           case '>':
-            this.moveRight();
+            c = this.moveRight();
+            this.body.push(c);
             break;
           case '<':
-            this.moveLeft();
+            c = this.moveLeft();
+            this.body.push(c);
             break;
           case '.':
-            this.output();
+            c = this.output();
+            this.body.push(c);
             break;
           case ',':
-            this.input();
+            c = this.input();
+            this.body.push(c);
             break;
           case '#':
-            this.debug();
+            c = this.debug();
+            this.body.push(c);
             break;
         }
     });
@@ -74,7 +82,7 @@ export default class Compiler {
     const cur = this.module.i32.load8_u(0, 1, p);
     const add = this.module.i32.add(cur, this.module.i32.const(1));
     const sto = this.module.i32.store8(0, 1, p, add);
-    this.body.push(sto);
+    return sto;
   }
 
   decrement() {
@@ -82,45 +90,41 @@ export default class Compiler {
     const cur = this.module.i32.load8_u(0, 1, p);
     const sub = this.module.i32.sub(cur, this.module.i32.const(1));
     const sto = this.module.i32.store8(0, 1, p, sub);
-    this.body.push(sto);
+    return sto;
   }
 
   moveRight() {
     const p = this.module.global.get('p', binaryen.i32);
     const add = this.module.i32.add(p, this.module.i32.const(1));
     const set = this.module.global.set('p', add);
-    this.body.push(set);
+    return set;
   }
 
   moveLeft() {
     const p = this.module.global.get('p', binaryen.i32);
     const sub = this.module.i32.sub(p, this.module.i32.const(1));
     const set = this.module.global.set('p', sub);
-    this.body.push(set);
+    return set;
   }
 
   output() {
     const p = this.module.global.get('p', binaryen.i32);
     const cur = this.module.i32.load8_u(0, 1, p);
     const cal = this.module.call('output', [cur], binaryen.none);
-    this.body.push(cal);
+    return cal;
   }
 
   input() {
     const p = this.module.global.get('p', binaryen.i32);
     const cal = this.module.call('input', [], binaryen.i32);
     const sto = this.module.i32.store8(0, null, p, cal);
-    this.body.push(sto);
+    return sto;
   }
 
   debug() {
     const p = this.module.global.get('p', binaryen.i32);
     const cur = this.module.i32.load8_u(0, 1, p);
     const cal = this.module.call('debug', [p, cur], binaryen.none);
-    this.body.push(cal);
-  }
-
-  compileLoop() {
-
+    return cal;
   }
 }
